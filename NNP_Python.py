@@ -3,7 +3,7 @@ def distance(a, b):
 	return abs(a-b)
 
 def nearest_neighbours_list(xMax, radius, locations):
-	'''Returns a list of nearest neighbourss for eahc particle (indexices for each index)'''
+	'''Returns a list of nearest neighbours for each particle (indices for each index)'''
 		# Cells with corresponding particles
 	cell_allocation = [[] for x in range(0, int((xMax // radius + 1)))]	# Initialize
 		# Store corresponding particles in cells
@@ -27,6 +27,6 @@ def nearest_neighbours_list(xMax, radius, locations):
 
 xMax = 10.0
 radius = 4.0
-locations = [0.0, 6.0, 2.0, 5.0, 1.0, 7.0, 10.0]	# particle Location List
+locations = [0.0, 6.0, 2.0, 5.0, 1.0, 7.0, 10.0]	# Particle Location List
 
 print nearest_neighbours_list(xMax, radius, locations)
