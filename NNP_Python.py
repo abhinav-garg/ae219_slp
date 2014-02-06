@@ -1,3 +1,5 @@
+import sys, pickle
+
 def distance(a, b):
 	'''1D distance'''
 	return abs(a-b)
@@ -25,8 +27,17 @@ def nearest_neighbours_list(xMax, radius, locations):
 						neighbours[index].append(other_particle_index)
 	return neighbours
 
-xMax = 10.0
-radius = 4.0
-locations = [0.0, 6.0, 2.0, 5.0, 1.0, 7.0, 10.0]	# Particle Location List
+def main(args):
+	xMax = 10.0
+	radius = 4.0
+	length = args[1]
+	locations = pickle.load(open('NNP_test_' + str(length) + '.p', 'rb'))
+	print nearest_neighbours_list(xMax, radius, locations)
 
-print nearest_neighbours_list(xMax, radius, locations)
+# locations = [0.0, 6.0, 2.0, 5.0, 1.0, 7.0, 10.0]	# Particle Location List
+
+if __name__ == '__main__':
+	try:
+		main(sys.argv)
+	except:
+		print 'Did you forget to pass the size of the sample as a command line argument?'
