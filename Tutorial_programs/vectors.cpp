@@ -20,7 +20,12 @@ int main(int argc, char *argv[])	{
 
 	float array[5] = {0.0, 1.0, 2.0, 3.0, 4.0};
 		// Vector constructor
-	vector <float> blah (array, array + sizeof(array) / sizeof(float));
+	vector <float> blah (array, array + sizeof(array) / sizeof(float));		// Constructor
+
+	cout << sizeof(array) << endl;
+	cout << sizeof(float) << endl;
+	cout << sizeof(array) / sizeof(float) << endl;
+
 	for (int i = 0; i < blah.size(); i++)	{
 		cout << blah.at(i) << endl;
 	}
