@@ -28,6 +28,7 @@ void brute_force(int size, float locations[], float radius, float neighbours[][7
 
 		// Print out the neighbours list
 	for (int i = 0; i < size; i++)	{
+		cout << i << "# ";
 		for (int j = 0; j < size; j++)	{
 			cout << neighbours[i][j] << " ";
 		}
@@ -36,27 +37,35 @@ void brute_force(int size, float locations[], float radius, float neighbours[][7
 }
 
 void print_vectorOfvector(vector <float_vector> vect)	{
-	cout << "PRINTING VECTOR OF VECTOR" << endl;
+	// cout << "PRINTING VECTOR OF VECTOR" << endl;
 	for (int i = 0; i < vect.size(); i++)	{
+		cout << i << "# "; 
 		for (int j = 0; j < vect[i].size(); j++)	{
-			cout << vect[i][j] << endl;
+			cout << vect[i].at(j) << " ";
 		}
 		cout << endl;
 	}
 }
 
 void print_vector(vector <float> vect)	{
-	cout << "PRINTING VECTOR" << endl;
+	// cout << "PRINTING VECTOR" << endl;
 	for (int i = 0; i < vect.size(); i++)	{
 		cout << vect[i] << " ";
 	}
 	cout << endl;
 }
 
-vector <float_vector> cell_list(float *array_locations, float radius, float xMax)	{
+vector <float_vector> cell_list(int n_elements, float array_locations[], float radius, float xMax)	{
 		// Store locations' array into a vector - May be unnecessary
-	vector <float> locations (array_locations, array_locations + sizeof(array_locations) / sizeof(float));	
-	print_vector(locations);
+	// vector <float> locations (array_locations, array_locations + sizeof(array_locations) / sizeof(float));	
+	vector <float> locations;
+
+	for (int i = 0; i < n_elements; i++)	{
+		locations.push_back(array_locations[i]);
+	}
+
+	// print_vector(locations);
+	
 	vector <float_vector> cells;	// Vector of vectors
 	float_vector temp;	// For temporary (storing) purposes
 
@@ -65,10 +74,13 @@ vector <float_vector> cell_list(float *array_locations, float radius, float xMax
 	vector <float_vector> neighbours;	// Stores neighbours corresponding to each particle
 
 	int n_cells = int(floor(xMax/radius));
-	for (int i = 0; i < n_cells; i++)	{
+	
+	// cout << "Number of cells " << n_cells << endl;
+
+	for (int i = 0; i <= n_cells; i++)	{
 		cells.push_back(temp);
 	}
-	// Populated cells vector with the required numbers of empty vectors
+	// Populated cells vector with the required number of empty vectors
 
 	int current_cell;
 
@@ -77,6 +89,8 @@ vector <float_vector> cell_list(float *array_locations, float radius, float xMax
 		cells[current_cell].push_back(i);	
 	}
 	// Stored the particles in corresponding cells
+
+	// print_vectorOfvector(cells);
 
 	for (int i = 0; i < locations.size(); i++)	{
 		current_cell = int(floor(locations[i]/radius));
@@ -110,10 +124,6 @@ vector <float_vector> cell_list(float *array_locations, float radius, float xMax
 	}
 
 	print_vectorOfvector(neighbours);
-	cout << "####" << endl;
-	print_vectorOfvector(cells);
-	cout << "####" << endl;
-	print_vector(locations);
 	// Printed the values to console
 	
 	return neighbours;
@@ -127,7 +137,7 @@ int main(int argc, char *argv[]) {
 	float neighbours[7][7];
 	int size = 7;
 	brute_force(size, locations, radius, neighbours);
-	cout << endl << "Next algo" << endl;
-	cell_list(locations, radius, xMax);
+	cout << endl << "Next algorithm" << endl << endl;
+	cell_list(size, locations, radius, xMax);
 	return 0;
 }
