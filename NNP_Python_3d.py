@@ -49,6 +49,21 @@ def nearest_neighbours_list(xMax, yMax, zMax, radius, locations):
 										neighbours[index].append(other_particle_index)
 	return neighbours
 
+def distance(a, b):
+	'''Returns the distance'''
+	return ((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2) ** 0.5
+	
+def check(neighbours, locations):
+	for primary, secondaryIndices in enumerate(neighbours):
+		for secondary in secondaryIndices:
+			print primary, locations[primary], secondary, locations[secondary], distance(locations[primary], locations[secondary])
+
+def print_all_distances(locations):
+	print "Printing all distances"
+	for indp, primary in enumerate(locations):
+		for inds, secondary in enumerate(locations):
+			print indp, primary, inds, secondary, distance(primary, secondary)
+
 def main():
 	xMax = 10.0
 	yMax = 10.0
@@ -71,8 +86,10 @@ def main():
 			break;
 
 	testSampleFile.close()
-	print locations
-	print nearest_neighbours_list(xMax, yMax, zMax, radius, locations)
+	# print locations
+	check(nearest_neighbours_list(xMax, yMax, zMax, radius, locations), locations)
+	print_all_distances(locations)
+
 
 if __name__ == '__main__':
 	try:
