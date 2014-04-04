@@ -1,4 +1,4 @@
-import sys, pickle
+import sys, pickle, time
 
 def within_distance(a, b, radius):
 	'''Checks if within radius, saves on square root operation'''
@@ -9,44 +9,40 @@ def within_distance(a, b, radius):
 	# print "CHECKPOINT Distance function passed"
 	return False
 
-def nearest_neighbours_list(xMax, yMax, zMax, radius, locations):
+def nearest_neighbours_list(xMax, yMax, zMax, radius, index, locations):
 	'''Returns a list of nearest neighbours for each particle (indices for each index)'''
 	cell_0_max = int(xMax // radius + 1)
 	cell_1_max = int(yMax // radius + 1)
 	cell_2_max = int(zMax // radius + 1)
 		# Cells with corresponding particles
-	cellList = [ [[ [] for z in range(0, cell_2_max)] for y in range(0, cell_1_max)] for x in range(0, cell_0_max)]
+	cellList = [[[ [] for z in range(0, cell_2_max)] for y in range(0, cell_1_max)] for x in range(0, cell_0_max)]
 		# Generates a 3D list
 
 		# Store corresponding particles in cells
-	for index, particle in enumerate(locations):
-		cellList[int(particle[0] // radius)][int(particle[1] // radius)][int(particle[2] // radius)].append(index)
+	for ind, part in enumerate(locations):
+		cellList[int(part[0] // radius)][int(part[1] // radius)][int(part[2] // radius)].append(ind)
 		
 		# particles with corresponding cells
 	particle_cell = []
 		# The list is inherently indexed. Just store corresponding locations
-	for index, particle in enumerate(locations):
-		
-		particle_cell.append((int(particle[0] // radius), int(particle[1] // radius), int(particle[2] // radius)))
+	for part in locations:
+		particle_cell.append((int(part[0] // radius), int(part[1] // radius), int(part[2] // radius)))
 	
-	# print cellList	
-		# Neighbours corresponding to each particle
-	neighbours = [[] for x in range(0, len(locations))]	# Initialize
+	neighbours = []	# Initialize
 
+	particle = locations[index]
 
-
-	for index, particle in enumerate(locations):
-		current_cell = particle_cell[index]		# Tuple
-		for near_0 in [-1, 0, 1]:
-			for near_1 in [-1, 0, 1]:
-				for near_2 in [-1, 0, 1]:
-					if current_cell[0] + near_0 >= 0 and current_cell[0] + near_0 < cell_0_max:
-						if current_cell[1] + near_1 >= 0 and current_cell[1] + near_1 < cell_1_max:
-							if current_cell[2] + near_2 >= 0 and current_cell[2] + near_2 < cell_2_max:
-								for other_particle_index in cellList[current_cell[0] + near_0][current_cell[1] + near_1][current_cell[2] + near_2]:
-									if within_distance(particle, locations[other_particle_index], radius):
+	current_cell = particle_cell[index]		# Tuple
+	for near_0 in [-1, 0, 1]:
+		for near_1 in [-1, 0, 1]:
+			for near_2 in [-1, 0, 1]:
+				if current_cell[0] + near_0 >= 0 and current_cell[0] + near_0 < cell_0_max:
+					if current_cell[1] + near_1 >= 0 and current_cell[1] + near_1 < cell_1_max:
+						if current_cell[2] + near_2 >= 0 and current_cell[2] + near_2 < cell_2_max:
+							for other_particle_index in cellList[current_cell[0] + near_0][current_cell[1] + near_1][current_cell[2] + near_2]:
+								if within_distance(particle, locations[other_particle_index], radius):
 										# print "Entering loop"
-										neighbours[index].append(other_particle_index)
+										neighbours.append(other_particle_index)
 	return neighbours
 
 def distance(a, b):
@@ -70,7 +66,7 @@ def main():
 	zMax = 10.0
 	radius = 4.0
 	locations = []
-	MAX = 10
+	MAX = 1000
 	count = 0
 
 	testSampleFile = open("testSampleFile.txt", "r")
@@ -87,9 +83,15 @@ def main():
 
 	testSampleFile.close()
 	# print locations
-	check(nearest_neighbours_list(xMax, yMax, zMax, radius, locations), locations)
-	print_all_distances(locations)
-
+	
+	endTime = 0
+	for high in [1, 10, 100, 1000]:
+		for index in range(0, high):
+			startTime = time.time()
+			nearest_neighbours_list(xMax, yMax, zMax, radius, index, locations)
+			endTime = time.time()
+		diffTime = endTime - startTime
+		print diffTime
 
 if __name__ == '__main__':
 	try:
