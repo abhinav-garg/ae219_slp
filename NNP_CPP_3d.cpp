@@ -5,6 +5,7 @@
 #include <string>
 #include <sstream>
 #include <cstdlib>
+#include <ctime>
 
 typedef std::vector<float> float_vector;
 
@@ -212,58 +213,57 @@ std::vector<int> cellList(int particleIndex, ParticleAggregation P, CellGrid C, 
 	return neighbours;
 }
 
-void brute_force(ParticleAggregation P, float radius, float neighbours[][7])	{
+std::vector<int> brute_force(int particleIndex, ParticleAggregation P, float radius)	{
 // A brute force algorithm
 // Works in O(n-squared)
-	int i, j, k;
-	for (i = 0; i < P.size(); i++)	{
-		k = 0; 	// Keep count of neighbours for the i-th particle
-		for (j = 0; j < P.size(); j++)	{
-			if (P.particleNumber(i).withinDistance(P.particleNumber(j), radius))	{
-				neighbours[i][k] = j;	// Store the index corresponding to that particle
-				k++;	// Record that a particle in the nrighbourhood has been found 
-			}
-		}
-		// Set the rest to -1
-		for (; k < P.size(); k++)	{
-			neighbours[i][k] = -1;
+	int j, k;
+	std::vector<int> neighbours;
+	for (j = 0; j < P.size(); j++)	{
+		if (P.particleNumber(particleIndex).withinDistance(P.particleNumber(j), radius))	{
+			neighbours.push_back(j);	// Store the index corresponding to that particle
 		}
 	}
-
-		// Print out the neighbours list
-	for (int i = 0; i < P.size(); i++)	{
-		std::cout << i << "# ";
-		for (int j = 0; j < P.size(); j++)	{
-			std::cout << neighbours[i][j] << " ";
-		}
-		std::cout << std::endl;
-	}
+	return neighbours;
 }
 
 int main(int argc, char *argv[]) {
+	
 	float radius = 4.0;
-	float neighbours[7][7];
-	int MAX = 10000;
+	int MAX = 10;
 	ParticleAggregation P;
 	Space S;
+	CellGrid C;
+	
 	Particle max(10, 10, 10);
 	Particle min(0, 0, 0);
+	
 	S.set(max, min);
-	CellGrid C;
+	
 	P.loadValues("testSampleFile.txt", MAX);
+	
 	C.initialize(S, radius);
 	C.populate(P, radius);
-	// brute_force(P, radius, neighbours);
-
+	
 	std::vector<int> v;
+	
+	clock_t t;
+	float diffTime;
+
+	// Brute Force
 	for(int i = 0; i < MAX; i++)	{
-		v = cellList(i, P, C, radius);
-		std::cout << i << "# ";
-		for(int j = 0; j < v.size(); j++)	{
-			std::cout << v[j] << " ";
-		}
-		std::cout << std::endl;
+		t = clock();
+		v =	brute_force(i, P, radius);
+		t = clock() - t;
+		diffTime = (float)t/CLOCKS_PER_SEC * 100000;
+		std::cout << t << diffTime << std::endl;
 	}
 
+	// Cell List
+	for(int i = 0; i < MAX; i++)	{
+		t = clock();
+		v = cellList(i, P, C, radius);
+		diffTime = (float)t/CLOCKS_PER_SEC * 100000;
+		std::cout << diffTime << std::endl;
+	}	
 	return 0;
 }
