@@ -229,7 +229,7 @@ std::vector<int> brute_force(int particleIndex, ParticleAggregation P, float rad
 int main(int argc, char *argv[]) {
 	
 	float radius = 4.0;
-	int MAX = 10;
+	int MAX = 100000;
 	ParticleAggregation P;
 	Space S;
 	CellGrid C;
@@ -239,7 +239,7 @@ int main(int argc, char *argv[]) {
 	
 	S.set(max, min);
 	
-	P.loadValues("testSampleFile.txt", MAX);
+	P.loadValues("testSampleFile.txt", MAX);	// Contains a total of 1000000 (1 million) points
 	
 	C.initialize(S, radius);
 	C.populate(P, radius);
@@ -249,21 +249,25 @@ int main(int argc, char *argv[]) {
 	clock_t t;
 	float diffTime;
 
+	std::cout << "Brute Force" << std::endl;
 	// Brute Force
+	t = clock();
 	for(int i = 0; i < MAX; i++)	{
-		t = clock();
 		v =	brute_force(i, P, radius);
-		t = clock() - t;
-		diffTime = (float)t/CLOCKS_PER_SEC * 100000;
-		std::cout << t << diffTime << std::endl;
 	}
-
+	t = clock() - t;
+	diffTime = (float)t/CLOCKS_PER_SEC;
+	std::cout << diffTime << std::endl;
+	
+	std::cout << "Cell List" << std::endl;
+	t = clock();
 	// Cell List
 	for(int i = 0; i < MAX; i++)	{
-		t = clock();
 		v = cellList(i, P, C, radius);
-		diffTime = (float)t/CLOCKS_PER_SEC * 100000;
-		std::cout << diffTime << std::endl;
 	}	
+	t = clock() - t;
+	diffTime = (float)t/CLOCKS_PER_SEC;
+	std::cout << diffTime << std::endl;
+	
 	return 0;
 }

@@ -66,7 +66,7 @@ def main():
 	zMax = 10.0
 	radius = 4.0
 	locations = []
-	MAX = 1000
+	MAX = 10000
 	count = 0
 
 	testSampleFile = open("testSampleFile.txt", "r")
@@ -85,13 +85,13 @@ def main():
 	# print locations
 	
 	endTime = 0
-	for high in [1, 10, 100, 1000]:
+	for high in [1, 10, 100, 1000, 10000]:
 		for index in range(0, high):
 			startTime = time.time()
 			nearest_neighbours_list(xMax, yMax, zMax, radius, index, locations)
 			endTime = time.time()
 		diffTime = endTime - startTime
-		print diffTime
+		print "%.20f" %diffTime
 
 if __name__ == '__main__':
 	try:
