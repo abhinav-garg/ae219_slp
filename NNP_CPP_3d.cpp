@@ -6,6 +6,7 @@
 #include <sstream>
 #include <cstdlib>
 #include <ctime>
+#include <algorithm>
 
 typedef std::vector<float> float_vector;
 
@@ -66,6 +67,9 @@ class ParticleAggregation	{
 	}
 	Particle particleNumber(int i)	{
 		return P[i];
+	}
+	void add_particle(Particle p)	{
+		P.push_back(p);
 	}
 	void print()	{
 		for(int i = 0; i < P.size(); i++)	{
@@ -188,16 +192,15 @@ public:
 std::vector<int> cellList(int particleIndex, ParticleAggregation P, CellGrid C, float radius)	{
 	std::vector<int> neighbours;
 	// C.partCell[particleIndex] will give you a tuple of the cell indices corresponding to that particle index
-	// std::cout << "CHECK!" << std::endl;
+	// std::cout << "Checkpoint - Function called" << std::endl;
 	IndexCell ic = C.partCell[particleIndex];
-	// std::cout << "CHECK!" << std::endl;
 	for(int i = -1; i <= 1; i++)	{
 		for(int j = -1; j <= 1; j++)	{
 			for(int k = -1; k <= 1; k++)	{
 				if(ic.a + i >= 0 && ic.a + i < C.cellXMax)	{
 					if(ic.b + j >= 0 && ic.b + j < C.cellYMax)	{
 						if(ic.c + k >= 0 && ic.c + k < C.cellZMax)	{
-							// std::cout << "CHECK!" << std::endl;
+							// std::cout << "Checkpoint - cells located" << std::endl;
 							for(int p = 0; p < C.space[ic.a + i][ic.b + j][ic.c + k].size(); p++)	{
 								// C.space[ic.a + i][ic.b + j][ic.c + k][p] will loop through the particle indices in the cell i, j, k
 								if(P.particleNumber(particleIndex).withinDistance(P.particleNumber(C.space[ic.a + i][ic.b + j][ic.c + k][p]), radius))	{
@@ -226,10 +229,54 @@ std::vector<int> brute_force(int particleIndex, ParticleAggregation P, float rad
 	return neighbours;
 }
 
+void print_vector(std::vector<int> v)	{
+	for(int i = 0; i < v.size(); i++)	{
+		std::cout << v[i] << " ";
+	}
+	std::cout << std::endl;
+}
+
+void unit_test()	{
+	ParticleAggregation P;
+	Space S;
+	float radius = 1.0;
+	CellGrid C;
+	Particle p1(0.0,0.0,0.0);
+	Particle p2(1.0,1.0,1.0);
+	Particle p3(0.0,1.0,0.0);
+	Particle p4(2.0,0.0,0.0);
+	std::vector<int> check[4];
+	check[0].push_back(0); check[0].push_back(2);
+	check[1].push_back(1);
+	check[2].push_back(0); check[2].push_back(2);
+	check[3].push_back(3);
+	P.add_particle(p1);
+	P.add_particle(p2);
+	P.add_particle(p3);
+	P.add_particle(p4);
+	Particle max(10,10,10);
+	Particle min(0,0,0);
+	S.set(max,min);
+	C.initialize(S,radius);
+	C.populate(P, radius);
+	std::vector<int> v1, v2;
+	for(int i = 0; i < 4; i++)	{
+		v1 = brute_force(i, P, radius);
+		std::sort(v1.begin(), v1.end());
+		v2 = cellList(i, P, C, radius);
+		std::sort(v2.begin(), v2.end());
+		if(v1!=check[i] && v1!=v2)	{
+			std::cout << "Unit test FAIL" << std::endl;
+			break;
+		}
+	}
+	
+}
+
 int main(int argc, char *argv[]) {
 	
-	float radius = 4.0;
-	int MAX = 100000;
+	float radius = 1.5;
+	int MAX = 1000;
 	ParticleAggregation P;
 	Space S;
 	CellGrid C;
@@ -248,6 +295,8 @@ int main(int argc, char *argv[]) {
 	
 	clock_t t;
 	float diffTime;
+
+	unit_test();
 
 	std::cout << "Brute Force" << std::endl;
 	// Brute Force
